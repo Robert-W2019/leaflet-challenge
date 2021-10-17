@@ -68,35 +68,60 @@ function createFeatures(earthquakeData) {
 }
 
 function createMap(earthquakes) {
+  
+  // Create the layers.
+  var satellite = L.tileLayer('https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.jpg90?access_token={token}', {
+    attribution: "Map data &copy; <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    id: "mapbox.country-boundaries-v1",
+    token: API_KEY
+  });
 
-  // Create the base layers.
-  var street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  })
+  var grayscale = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={token}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/dark-v9',
+    token: API_KEY
+  });
 
-  var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+  var outdoors = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
     attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
   });
+ 
 
   // Create a baseMaps object.
   var baseMaps = {
-    "Street Map": street,
-    "Topographic Map": topo
+    "Satellite": satellite,
+    "<span style='color: gray'>Grayscale</span>": grayscale,
+    "Outdoors": outdoors
   };
+
+  // variable for the plates
+  var plates = new L.LayerGroup();
 
   // Create an overlay object to hold our overlay.
   var overlayMaps = {
-    Earthquakes: earthquakes
+    Earthquakes: earthquakes,
+    Plates: plates
   };
+  // Query to retrieve the plates data
+  var platesQuery = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_plates.json";
+  
+  // Create the plates and add them to the plates layer
+  d3.json(platesQuery, function(data) {
+    L.geoJSON(data, {
+      style: function() {
+        return {color: "red", fill: 0}
+      }
+    }).addTo(plates)
+  })
 
-
-  // Create our map, giving it the streetmap and earthquakes layers to display on load.
+  // Create our map, giving it the streetmap, earthquakes, and plates layers to display on load.
   var myMap = L.map("map", {
     center: [
       37.09, -95.71
     ],
     zoom: 5,
-    layers: [street, earthquakes]
+    layers: [satellite, earthquakes, grayscale, plates]
   });
 
   // Create a layer control.
