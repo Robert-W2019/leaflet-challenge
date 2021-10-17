@@ -23,35 +23,35 @@ function createFeatures(earthquakeData) {
 
   // Cirle color by Depth
   function circleColor(depth) {
-    if (depth < 5) {
-      return "#51F400"
+    if (depth <= 5) {
+      return "#DEF7BC"
     }
-    else if (depth < 10) {
-      return "#AAF584"
+    else if (depth <= 10) {
+      return "#C9DFAA"
     }
-    else if (depth < 20) {
-      return "#FFBA56"
+    else if (depth <= 20) {
+      return "#ADBF93"
     }
-    else if (depth < 30) {
-      return "#ff9933"
+    else if (depth <= 30) {
+      return "#8C9B77"
     }
-    else if (depth < 40) {
-      return "#B75858"
+    else if (depth <= 40) {
+      return "#758164"
     }
-    else if (depth < 50) {
-      return "#B75858"
+    else if (depth <= 50) {
+      return "#4C5442"
     }
-    else if (depth < 60) {
-      return "#B75858"
+    else if (depth <= 60) {
+      return "#363B2F"
     }
     else {
-      return "#FF0000"
+      return "#050504"
     }
   }
   // Create a GeoJSON layer that contains the features array on the earthquakeData object.
   // Run the onEachFeature function once for each piece of data in the array.
   var earthquakes = L.geoJSON(earthquakeData, {
-    pointToLayer: function(earthquakeData, latlng) {
+    pointToLayer: function (earthquakeData, latlng) {
       return L.circle(latlng, {
         radius: circleSize(earthquakeData.properties.mag),
         color: circleColor(earthquakeData.geometry.coordinates[2]),
@@ -61,8 +61,8 @@ function createFeatures(earthquakeData) {
     onEachFeature: onEachFeature
   });
 
- 
-  
+
+
   // Send our earthquakes layer to the createMap function/
   createMap(earthquakes);
 }
@@ -89,6 +89,7 @@ function createMap(earthquakes) {
     Earthquakes: earthquakes
   };
 
+
   // Create our map, giving it the streetmap and earthquakes layers to display on load.
   var myMap = L.map("map", {
     center: [
@@ -105,7 +106,31 @@ function createMap(earthquakes) {
     collapsed: false
   }).addTo(myMap);
 
+
+  var legend = L.control({ position: "bottomright" });
+  legend.onAdd = function() {
+    var div = L.DomUtil.create("div", "info legend");
+    var labels = ["Depth of the earthquake", "less than or equal to 5", "6-10", "11-20", "21-30","31-40","41-50", "51-60", "61 or greater"];
+    var colorscale = ["transparent", "#DEF7BC", "#C9DFAA", "#ADBF93", "#8C9B77", "#758164", "#4C5442", "#363B2F","#050504"];
+    title=`<fieldset style ="background: transparent">`;
+    var infoLine = ''
+    for(var i = 0; i < colorscale.length; i++) {
+      infoLine +=`<fieldset style="background:${colorscale[i]}; padding: 5px"><b>
+      ${labels[i]}<b></fieldset>`;
+    };
+    div.innerHTML = title + infoLine + "</fieldset>"
+    return div
+    
+
+  };
+  legend.addTo(myMap); 
+
+
+
+
+  
 }
+
 
 
 
