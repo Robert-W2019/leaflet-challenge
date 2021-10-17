@@ -26,7 +26,6 @@ The USGS is interested in building a new set of tools that will allow them to vi
 
 ### Level 1: Basic Visualization
 
-![2-BasicMap](Images/2-BasicMap.png)
 
 Your first task is to visualize an earthquake data set.
 
@@ -50,6 +49,5 @@ Your first task is to visualize an earthquake data set.
 
    * Create a legend that will provide context for your map data.
 
-   * Your visualization should look something like the map above.
-
+![2-BasicMap](Images/2-BasicMap.png)
 
